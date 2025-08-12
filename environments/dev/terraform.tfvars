@@ -61,11 +61,147 @@ db_ingress_rules = [
 web_user_data = <<-EOF
 #!/bin/bash
 apt update -y
-apt install -y apache2
+apt install -y apache2 git wget unzip curl
 systemctl start apache2
 systemctl enable apache2
-echo "<h1>Dev Environment - Web Server</h1>" > /var/www/html/index.html
-echo "<p>Deployed via Terraform Modules</p>" >> /var/www/html/index.html
+
+# Create game directory
+mkdir -p /var/www/html/game
+cd /var/www/html/game
+
+# Clone the game repository
+git clone https://github.com/Kofijoo/kid_game.github.io.git .
+
+# Create welcome page with game link
+cat > /var/www/html/index.html << 'HTML'
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quest of the Sky Coders - Joshua's Game Server</title>
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            margin: 0; 
+            padding: 40px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container { 
+            background: rgba(255,255,255,0.95); 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { 
+            color: #4a5568; 
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        .game-link { 
+            display: block;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white; 
+            padding: 20px 40px; 
+            text-decoration: none; 
+            border-radius: 50px; 
+            margin: 30px auto;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            max-width: 300px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .game-link:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .info-card {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4299e1;
+        }
+        .features {
+            margin-top: 30px;
+        }
+        .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        .features li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .features li:before {
+            content: "🎮 ";
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⭐ Quest of the Sky Coders ⭐</h1>
+        <p class="subtitle">A Professional AI-Adaptive Learning Game for Ages 9-11</p>
+        
+        <a href="/game/" class="game-link">🚀 Start Your Adventure!</a>
+        
+        <div class="features">
+            <h3>🎯 Game Features:</h3>
+            <ul>
+                <li>Interactive Home Menu with Animated Characters</li>
+                <li>6 Learning Islands: Fractions, Vocabulary, Geometry & More</li>
+                <li>AI-Adaptive Difficulty System</li>
+                <li>Progressive Hints with Audio Feedback</li>
+                <li>Mobile Responsive Design</li>
+                <li>Real-time Learning Analytics</li>
+            </ul>
+        </div>
+        
+        <div class="info-grid">
+            <div class="info-card">
+                <strong>Server:</strong> dev-web-server
+            </div>
+            <div class="info-card">
+                <strong>Environment:</strong> Development
+            </div>
+            <div class="info-card">
+                <strong>Deployed via:</strong> Terraform Modules
+            </div>
+            <div class="info-card">
+                <strong>Created by:</strong> Joshua Agyekum
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+HTML
+
+# Set permissions
+chown -R www-data:www-data /var/www/html
+chmod -R 755 /var/www/html
+
+# Enable Apache modules for better performance
+a2enmod rewrite
+a2enmod headers
+systemctl restart apache2
 EOF
 
 db_user_data = <<-EOF

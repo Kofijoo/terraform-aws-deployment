@@ -22,3 +22,13 @@ output "nat_gateway_public_ips" {
   description = "Public IPs of NAT Gateways"
   value       = module.vpc.nat_public_ips
 }
+
+output "alb_dns_name" {
+  description = "DNS name of the Application Load Balancer"
+  value       = module.alb.alb_dns_name
+}
+
+output "alb_url" {
+  description = "URL of the Application Load Balancer"
+  value       = "http://${module.alb.alb_dns_name}"
+}

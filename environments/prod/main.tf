@@ -6,6 +6,14 @@ terraform {
       version = "~> 6.0"
     }
   }
+  
+  backend "s3" {
+    bucket         = "joshua-terraform-state-zc3nwpgp"
+    key            = "environments/prod/terraform.tfstate"
+    region         = "eu-north-1"
+    dynamodb_table = "joshua-terraform-state-lock"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
@@ -30,7 +38,7 @@ data "aws_ami" "ubuntu" {
 
 # VPC Module from GitHub
 module "vpc" {
-  source = "git::https://github.com/Kofijoo/terraform-aws-modules.git//modules/vpc?ref=v1.0.0"
+  source = "git::https://github.com/Kofijoo/terraform-aws-modules.git//modules/vpc?ref=v1.0.1"
   
   vpc_cidr               = var.vpc_cidr
   availability_zones     = var.availability_zones
@@ -44,7 +52,7 @@ module "vpc" {
 
 # Web Server Security Group
 module "web_sg" {
-  source = "git::https://github.com/Kofijoo/terraform-aws-modules.git//modules/security-group?ref=v1.0.0"
+  source = "git::https://github.com/Kofijoo/terraform-aws-modules.git//modules/security-group?ref=v1.0.1"
   
   name        = "${var.environment}-web-server-sg"
   description = "Security group for web servers"
@@ -59,7 +67,7 @@ module "web_sg" {
 
 # Database Security Group
 module "db_sg" {
-  source = "git::https://github.com/Kofijoo/terraform-aws-modules.git//modules/security-group?ref=v1.0.0"
+  source = "git::https://github.com/Kofijoo/terraform-aws-modules.git//modules/security-group?ref=v1.0.1"
   
   name        = "${var.environment}-database-sg"
   description = "Security group for database servers"
@@ -74,7 +82,7 @@ module "db_sg" {
 
 # Web Server EC2 Instance
 module "web_server" {
-  source = "git::https://github.com/Kofijoo/terraform-aws-modules.git//modules/ec2?ref=v1.0.0"
+  source = "git::https://github.com/Kofijoo/terraform-aws-modules.git//modules/ec2?ref=v1.0.1"
   
   instance_count              = var.web_instance_count
   instance_type              = var.web_instance_type
@@ -93,7 +101,7 @@ module "web_server" {
 
 # Database Server EC2 Instance
 module "db_server" {
-  source = "git::https://github.com/Kofijoo/terraform-aws-modules.git//modules/ec2?ref=v1.0.0"
+  source = "git::https://github.com/Kofijoo/terraform-aws-modules.git//modules/ec2?ref=v1.0.1"
   
   instance_count              = var.db_instance_count
   instance_type              = var.db_instance_type
