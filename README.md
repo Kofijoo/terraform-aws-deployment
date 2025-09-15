@@ -1,6 +1,6 @@
 # Terraform AWS Deployment
 
-**Author**: Joshua Agyekum  
+**Author**: Joshua K. Agyekum  
 **Project**: Terraform Multi-Repository Assignment
 
 Infrastructure deployment using reusable Terraform modules from the `terraform-aws-modules` repository.
